@@ -1,6 +1,6 @@
 # FrameExtractor
 
-Save user defined number of images from video. 
+Frame Extractor lets you extract high-quality frames from any video format and save them as images. You can choose how many images to save, and it will automatically calculate where to take the frames based on the video length. It skips the first and last 60 seconds of the video, so for the best results, your video should be at least 3-4 minutes long. There’s no limit on the video length or the number of images you can save, but you can’t save more frames than the video contains. For example, a 4-minute video at 30fps would yield a maximum of 60 images. 
 
 ![ExtractFrames](https://github.com/user-attachments/assets/4888ba64-6dc0-4209-9d29-0d44059a2bea)
 
