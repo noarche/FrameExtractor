@@ -9,7 +9,7 @@ Save user defined number of images from video.
 
 Download the parts inside /Complete With Ffmpeg/
 
-Download Winrar to extract & extract to `C:/extractFrames`
+Download [Winrar](https://www.rarlab.com/download.htm) & extract to `C:/extractFrames`
 
 Install python and add to path during installation
 
