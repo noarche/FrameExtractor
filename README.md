@@ -20,7 +20,7 @@ Install python and add to path during installation
 
 Press windows key + R and type `cmd` then press enter to open terminal
 
-in terminal type cd `C:/extractFrames`
+in terminal type `cd C:/extractFrames`
 
 Command to run `python ExtractFrames.py`
 
