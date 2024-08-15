@@ -15,6 +15,9 @@ Download [python](https://www.python.org/downloads/)
 
 Install python and add to path during installation
 
+![image](https://github.com/user-attachments/assets/51410975-265d-4bb6-9fe8-9415ad2d4e53)
+
+
 Press windows key + R and type `cmd` then press enter to open terminal
 
 in terminal type cd `C:/extractFrames`
