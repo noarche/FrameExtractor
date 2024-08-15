@@ -11,6 +11,8 @@ Download the parts inside [/Complete With Ffmpeg/](https://github.com/noarche/Fr
 
 Download [Winrar](https://www.rarlab.com/download.htm) & extract to `C:/extractFrames`
 
+Download [python](https://www.python.org/downloads/)
+
 Install python and add to path during installation
 
 Press windows key + R and type `cmd` then press enter to open terminal
