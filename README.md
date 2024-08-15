@@ -7,7 +7,7 @@ Save user defined number of images from video.
 
 # How to install & run
 
-Download the parts inside /Complete With Ffmpeg/
+Download the parts inside [/Complete With Ffmpeg/](https://github.com/noarche/FrameExtractor/tree/main/Complete%20with%20ffmpeg)
 
 Download [Winrar](https://www.rarlab.com/download.htm) & extract to `C:/extractFrames`
 
