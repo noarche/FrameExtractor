@@ -2,7 +2,7 @@ import os
 import re
 import subprocess
 from pathlib import Path
-
+from ffmpeg_path import *
 
 main_logo = '''
     [91m_[0m[93m_[0m[92m_[0m[96m_[0m[94m_[0m[95m_[0m     [91m_[0m[93m_[0m                  [92m_[0m[96m_[0m     [94m_[0m[95m_[0m[91m_[0m[93m_[0m[92m_[0m[96m_[0m                              
@@ -45,20 +45,16 @@ def get_video_duration(video_path):
     else:
         return None
 
-def create_output_directory(base_dir):
-    """Creates a new output directory, incrementing the number if it already exists."""
-    base_path = Path(base_dir)
+def create_output_directory(video_name, num_frames):
+    """Creates a new output directory with the format {video_name}_{num_frames}_Extracted_Frames."""
+    sanitized_video_name = sanitize_path(video_name)
+    dir_name = f"{sanitized_video_name}_{num_frames}_Extracted_Frames"
+    base_path = Path(dir_name)
+    
+    # Create the directory
     if not base_path.exists():
-        base_path.mkdir()
-        return base_path
-
-    i = 1
-    while True:
-        new_dir = base_path.parent / f"{base_path.name}_{i}"
-        if not new_dir.exists():
-            new_dir.mkdir()
-            return new_dir
-        i += 1
+        base_path.mkdir(parents=True, exist_ok=True)
+    return base_path
 
 def sanitize_path(path):
     """Sanitizes file path to remove special characters."""
@@ -83,16 +79,19 @@ def extract_frames(video_path, num_frames):
 
     fps = num_frames / total_time
 
-    
-    output_dir = create_output_directory("frames")
+    # Get the base name of the video file
+    video_name = Path(video_path).stem
 
-    
+    # Create the new output directory
+    output_dir = create_output_directory(video_name, num_frames)
+
+    # Sanitize the output directory path
     sanitized_output_dir = sanitize_path(output_dir)
 
-    
+    # Update the frame file naming to use {original_file_name}_{extracted_frame_number}.jpg
     command = (
         f'ffmpeg -i "{video_path}" -vf "fps={fps}" -ss {start_time} -t {total_time} '
-        f'-q:v 2 "{sanitized_output_dir}/frame_%04d.jpg"'
+        f'-q:v 2 "{sanitized_output_dir}/{video_name}_%04d.jpg"'
     )
 
     out, err = run_ffmpeg_command(command)
