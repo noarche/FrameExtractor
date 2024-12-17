@@ -24,6 +24,8 @@ exitnote = '''
 
 '''
 
+VIDEO_EXTENSIONS = ('.mp4', '.avi', '.mov', '.mkv', '.flv', '.wmv')  # Supported video file types
+
 def run_ffmpeg_command(command):
     """Runs a command in the shell and returns the output."""
     process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
@@ -34,7 +36,6 @@ def get_video_duration(video_path):
     """Gets the duration of the video using ffmpeg."""
     command = f'ffmpeg -i "{video_path}"'
     out, err = run_ffmpeg_command(command)
-    
     
     duration_pattern = re.compile(r"Duration:\s(\d+):(\d+):(\d+\.\d+)")
     match = duration_pattern.search(err.decode())
@@ -62,19 +63,17 @@ def sanitize_path(path):
 
 def extract_frames(video_path, num_frames):
     """Extracts frames from the video file."""
-    
     duration = get_video_duration(video_path)
     if duration is None:
-        print("\033[91mError obtaining video duration. Please ensure the video file is accessible.\033[0m:")
+        print(f"\033[91mError obtaining video duration for {video_path}. Please ensure the video file is accessible.\033[0m:")
         return
 
-    
     start_time = 60
     end_time = duration - 60
     total_time = end_time - start_time
 
     if total_time <= 0:
-        print("\033[91mThe video is too short to extract frames with the given parameters. Video must be minimum 3-4 min long.\033[0m:")
+        print("\033[91mThe video is too short to extract frames with the given parameters. Video must be at least 3-4 min long.\033[0m:")
         return
 
     fps = num_frames / total_time
@@ -96,32 +95,55 @@ def extract_frames(video_path, num_frames):
 
     out, err = run_ffmpeg_command(command)
     if err:
-        print(f"\033[91mError extracting frames\033[0m:: {err.decode().strip()}")
+        print(f"\033[91mError extracting frames from {video_path}\033[0m:: {err.decode().strip()}")
         return
 
     print(f"\033[32mFrames successfully saved in\033[0m: {sanitized_output_dir}")
 
+def process_directory(directory_path, num_frames):
+    """Processes all video files in the directory."""
+    video_files = [f for f in Path(directory_path).rglob("*") if f.suffix.lower() in VIDEO_EXTENSIONS]
+
+    if not video_files:
+        print("\033[91mNo video files found in the specified directory.\033[0m:")
+        return
+
+    print(f"\033[94mFound {len(video_files)} video(s) in the directory. Processing each...\033[0m")
+
+    for video_file in video_files:
+        print(f"\n\033[93mProcessing video: {video_file}\033[0m")
+        extract_frames(video_file, num_frames)
+
 def main():
     while True:
+        video_path = input("\033[95mEnter the path to the video file or directory\033[0m: ").strip()
         
-        video_path = input("\033[95mEnter the path to the video file\033[0m: ").strip()
-
-        
-        if not Path(video_path).is_file():
-            print("\033[91mInvalid file path. Please try again.\033[0m:")
+        # Remove whitespace input
+        if not video_path or video_path.isspace():
+            print("\033[91mInput cannot be empty. Please try again.\033[0m")
             continue
 
-        
-        try:
-            num_frames = int(input("\033[95mEnter the number of frames to extract\033[0m:: "))
-        except ValueError:
-            print("\033[91mInvalid input. Please enter a valid number.\033[0m:")
+        video_path = Path(video_path)
+
+        if video_path.is_dir():
+            try:
+                num_frames = int(input("\033[95mEnter the number of frames to extract for each video\033[0m: "))
+                process_directory(video_path, num_frames)
+            except ValueError:
+                print("\033[91mInvalid input. Please enter a valid number.\033[0m:")
+                continue
+        elif video_path.is_file() and video_path.suffix.lower() in VIDEO_EXTENSIONS:
+            try:
+                num_frames = int(input("\033[95mEnter the number of frames to extract\033[0m: "))
+                extract_frames(video_path, num_frames)
+            except ValueError:
+                print("\033[91mInvalid input. Please enter a valid number.\033[0m:")
+                continue
+        else:
+            print("\033[91mInvalid file or directory path. Please try again.\033[0m")
             continue
 
-        extract_frames(video_path, num_frames)
-
-        
-        choice = input("\033[92mDo you want to extract frames from another video? (yes/no)\033[0m: ").strip().lower()
+        choice = input("\033[92mDo you want to process another file or directory? (yes/no)\033[0m: ").strip().lower()
         if choice not in ["yes", "y"]:
             print(exitnote)
             break
